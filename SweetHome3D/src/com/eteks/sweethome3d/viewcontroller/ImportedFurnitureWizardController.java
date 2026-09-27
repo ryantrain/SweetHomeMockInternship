@@ -78,6 +78,7 @@ public class ImportedFurnitureWizardController extends WizardController
   private float                            depth;
   private float                            proportionalDepth;
   private float                            height;
+  private float                            volume;
   private float                            proportionalHeight;
   private float                            elevation;
   private boolean                          movable;
@@ -473,7 +474,7 @@ public class ImportedFurnitureWizardController extends WizardController
   }
 
   /**
-   * Sets the width of the imported piece.
+   * Sets the width of the imported piece. Recalculates volume.
    */
   private void setWidth(float width, boolean keepProportionalWidthUnchanged) {
     float adjustedWidth = Math.max(width, 0.001f);
@@ -483,6 +484,7 @@ public class ImportedFurnitureWizardController extends WizardController
     if (adjustedWidth != this.width) {
       float oldWidth = this.width;
       this.width = adjustedWidth;
+      setVolume();
       this.propertyChangeSupport.firePropertyChange(Property.WIDTH.name(), oldWidth, adjustedWidth);
     }
   }
@@ -502,7 +504,7 @@ public class ImportedFurnitureWizardController extends WizardController
   }
 
   /**
-   * Sets the depth of the imported piece.
+   * Sets the depth of the imported piece. Recalculates volume.
    */
   private void setDepth(float depth, boolean keepProportionalDepthUnchanged) {
     float adjustedDepth = Math.max(depth, 0.001f);
@@ -512,6 +514,7 @@ public class ImportedFurnitureWizardController extends WizardController
     if (adjustedDepth != this.depth) {
       float oldDepth = this.depth;
       this.depth = adjustedDepth;
+      setVolume();
       this.propertyChangeSupport.firePropertyChange(Property.DEPTH.name(), oldDepth, adjustedDepth);
     }
   }
@@ -531,7 +534,7 @@ public class ImportedFurnitureWizardController extends WizardController
   }
 
   /**
-   * Sets the size of the imported piece.
+   * Sets the size of the imported piece. Recalculates volume.
    */
   private void setHeight(float height, boolean keepProportionalHeightUnchanged) {
     float adjustedHeight = Math.max(height, 0.001f);
@@ -541,7 +544,29 @@ public class ImportedFurnitureWizardController extends WizardController
     if (adjustedHeight != this.height) {
       float oldHeight = this.height;
       this.height = adjustedHeight;
+      setVolume();
       this.propertyChangeSupport.firePropertyChange(Property.HEIGHT.name(), oldHeight, adjustedHeight);
+    }
+  }
+
+  /**
+   * Returns the width of this piece of furniture.
+   */
+  public float getVolume() { return this.volume; }
+
+  /**
+   * Sets the volume of this piece of furniture. Once this piece is updated,
+   * listeners added to this piece will receive a change notification.
+   * This function is called whenever either depth, height, or width is changed.
+   * @throws IllegalStateException if this piece of furniture isn't resizable
+   */
+  public void setVolume() {
+    if (isResizable()) {
+      float oldVolume = this.volume;
+      this.volume = this.width * this.height * this.depth;
+      this.propertyChangeSupport.firePropertyChange(HomePieceOfFurniture.Property.HEIGHT.name(), oldVolume, this.volume);
+    } else {
+      throw new IllegalStateException("Piece isn't resizable");
     }
   }
 

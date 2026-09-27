@@ -158,6 +158,7 @@ public class Home implements Serializable, Cloneable {
         HomePieceOfFurniture.SortableProperty.WIDTH,
         HomePieceOfFurniture.SortableProperty.DEPTH,
         HomePieceOfFurniture.SortableProperty.HEIGHT,
+            HomePieceOfFurniture.SortableProperty.VOLUME,
         HomePieceOfFurniture.SortableProperty.VISIBLE});
     // Init transient lists and other fields
     init(true);
@@ -165,7 +166,7 @@ public class Home implements Serializable, Cloneable {
   }
 
   /**
-   * Creates a home from an other one. All mutable data of the source <code>home</code>
+   * Creates a home from another one. All mutable data of the source <code>home</code>
    * is cloned to this home and listeners support is reset.
    * @since 5.0
    */
@@ -207,6 +208,22 @@ public class Home implements Serializable, Cloneable {
           }
         }
         this.furnitureVisiblePropertyNames = null;
+      }
+
+      // Ensure the Volume column is displayed for homes opened from files
+      // saved before the Volume property was introduced
+      if (this.furnitureVisibleProperties != null
+              && !this.furnitureVisibleProperties.contains(HomePieceOfFurniture.SortableProperty.VOLUME)) {
+        this.furnitureVisibleProperties =
+                new ArrayList<HomePieceOfFurniture.SortableProperty>(this.furnitureVisibleProperties);
+        int heightIndex = this.furnitureVisibleProperties.indexOf(
+                HomePieceOfFurniture.SortableProperty.HEIGHT);
+        if (heightIndex >= 0) {
+          this.furnitureVisibleProperties.add(heightIndex + 1,
+                  HomePieceOfFurniture.SortableProperty.VOLUME);
+        } else {
+          this.furnitureVisibleProperties.add(HomePieceOfFurniture.SortableProperty.VOLUME);
+        }
       }
   
       // Ensure all wall have an height
@@ -318,6 +335,7 @@ public class Home implements Serializable, Cloneable {
           HomePieceOfFurniture.SortableProperty.WIDTH,
           HomePieceOfFurniture.SortableProperty.DEPTH,
           HomePieceOfFurniture.SortableProperty.HEIGHT,
+              HomePieceOfFurniture.SortableProperty.VOLUME,
           HomePieceOfFurniture.SortableProperty.COLOR,
           HomePieceOfFurniture.SortableProperty.MOVABLE,
           HomePieceOfFurniture.SortableProperty.DOOR_OR_WINDOW,
@@ -326,7 +344,7 @@ public class Home implements Serializable, Cloneable {
     // Create a default top camera that matches default point of view 
     this.topCamera = new Camera(50, 1050, 1010, 
         (float)Math.PI, (float)Math.PI / 4, (float)Math.PI * 63 / 180);
-    // Create a default observer camera (use a 63° field of view equivalent to a 35mm lens for a 24x36 film)
+    // Create a default observer camera (use a 63ï¿½ field of view equivalent to a 35mm lens for a 24x36 film)
     this.observerCamera = new ObserverCamera(50, 50, 170, 
         7 * (float)Math.PI / 4, (float)Math.PI / 16, (float)Math.PI * 63 / 180);
     this.storedCameras = Collections.emptyList();
@@ -488,6 +506,7 @@ public class Home implements Serializable, Cloneable {
       case WIDTH : 
       case DEPTH :
       case HEIGHT :
+      case VOLUME :
       case MOVABLE :
       case DOOR_OR_WINDOW :
       case COLOR :

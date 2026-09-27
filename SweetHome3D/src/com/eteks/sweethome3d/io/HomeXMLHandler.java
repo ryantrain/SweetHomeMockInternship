@@ -745,7 +745,19 @@ public class HomeXMLHandler extends DefaultHandler {
     for (Map.Entry<String, String> property : this.homeProperties.entrySet()) {
       home.setProperty(property.getKey(), property.getValue());
     }
-    if (this.furnitureVisibleProperties.size() > 0) {
+    if (!this.furnitureVisibleProperties.isEmpty()) {
+
+      if (!this.furnitureVisibleProperties.contains(HomePieceOfFurniture.SortableProperty.VOLUME)) {
+        int heightIndex = this.furnitureVisibleProperties.indexOf(
+                HomePieceOfFurniture.SortableProperty.HEIGHT);
+        if (heightIndex >= 0) {
+          this.furnitureVisibleProperties.add(heightIndex + 1,
+                  HomePieceOfFurniture.SortableProperty.VOLUME);
+        } else {
+          this.furnitureVisibleProperties.add(HomePieceOfFurniture.SortableProperty.VOLUME);
+        }
+      }
+
       this.home.setFurnitureVisibleProperties(this.furnitureVisibleProperties);
     }
     this.home.setBackgroundImage(this.homeBackgroundImage);
