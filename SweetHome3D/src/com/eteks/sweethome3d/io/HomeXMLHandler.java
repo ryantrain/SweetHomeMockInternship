@@ -758,6 +758,10 @@ public class HomeXMLHandler extends DefaultHandler {
         }
       }
 
+      if (!this.furnitureVisibleProperties.contains(HomePieceOfFurniture.SortableProperty.LEVEL)) {
+        this.furnitureVisibleProperties.add(HomePieceOfFurniture.SortableProperty.LEVEL);
+      }
+
       this.home.setFurnitureVisibleProperties(this.furnitureVisibleProperties);
     }
     this.home.setBackgroundImage(this.homeBackgroundImage);

@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.PrintGraphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.AWTEventListener;
@@ -36,6 +37,7 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+import java.awt.print.PrinterGraphics;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -1852,8 +1854,21 @@ public class FurnitureTable extends JTable implements View, Printable {
               // Translate graphics to the currently rendered row 
               g.translate(0, -renderedRow * getRowHeight());
               this.drawing = true;
-              super.paint(g);
-              this.drawing = false;
+              
+              boolean printing = g instanceof PrinterGraphics
+                  || g instanceof PrintGraphics;
+              boolean showsRootHandles = getShowsRootHandles();
+              if (printing && showsRootHandles) {
+                setShowsRootHandles(false);
+              }
+              try {
+                super.paint(g);
+              } finally {
+                if (printing && showsRootHandles) {
+                  setShowsRootHandles(true);
+                }
+                this.drawing = false;
+              }
             }
 
             @Override
@@ -2135,6 +2150,10 @@ public class FurnitureTable extends JTable implements View, Printable {
 
     public Object getValueAt(int rowIndex, int columnIndex) {
       // Always return piece itself, the real property displayed at screen is chosen by renderer
+
+      if (rowIndex < 0 || rowIndex >= this.filteredAndSortedFurniture.size()) {
+        return null;
+      }
       return this.filteredAndSortedFurniture.get(rowIndex);
     }
 

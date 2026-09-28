@@ -159,7 +159,8 @@ public class Home implements Serializable, Cloneable {
         HomePieceOfFurniture.SortableProperty.DEPTH,
         HomePieceOfFurniture.SortableProperty.HEIGHT,
             HomePieceOfFurniture.SortableProperty.VOLUME,
-        HomePieceOfFurniture.SortableProperty.VISIBLE});
+        HomePieceOfFurniture.SortableProperty.VISIBLE,
+        HomePieceOfFurniture.SortableProperty.LEVEL});
     // Init transient lists and other fields
     init(true);
     addModelListeners();
@@ -202,7 +203,7 @@ public class Home implements Serializable, Cloneable {
         for (String furnitureVisiblePropertyName : this.furnitureVisiblePropertyNames) {
           try {
             this.furnitureVisibleProperties.add(
-                HomePieceOfFurniture.SortableProperty.valueOf(furnitureVisiblePropertyName));
+                    HomePieceOfFurniture.SortableProperty.valueOf(furnitureVisiblePropertyName));
           } catch (IllegalArgumentException ex) {
             // Ignore malformed enum constants 
           }
@@ -224,6 +225,11 @@ public class Home implements Serializable, Cloneable {
         } else {
           this.furnitureVisibleProperties.add(HomePieceOfFurniture.SortableProperty.VOLUME);
         }
+      }
+
+      if (this.furnitureVisibleProperties != null
+              && !this.furnitureVisibleProperties.contains(HomePieceOfFurniture.SortableProperty.LEVEL)) {
+          this.furnitureVisibleProperties.add(HomePieceOfFurniture.SortableProperty.LEVEL);
       }
   
       // Ensure all wall have an height
